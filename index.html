@@ -3,9 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f3ed">
+  <meta id="theme-color" name="theme-color" content="#f5f3ed">
   <title>College-town home sales | Price report</title>
   <link rel="icon" href="data:,">
+  <script>
+    try {
+      if (localStorage.getItem("home-sales-theme") === "dark") document.documentElement.dataset.theme = "dark";
+    } catch (_) {}
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -14,11 +19,38 @@
       --muted: #667780;
       --line: #d9dfd9;
       --green: #126b59;
-      --green-light: #d7e9df;
       --orange: #b95332;
       --orange-light: #f1ded4;
       --blue: #477c91;
       --white: #fffefa;
+      --axis: #667780;
+      --city: #344a53;
+      --track: #f0f1ec;
+      --answer: #354a54;
+      --finding: #50372f;
+      --finding-strong: #38231d;
+      --button-bg: #fffefa;
+      --button-hover: #e9eee8;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #111c22;
+      --ink: #edf3ef;
+      --muted: #a2b0b2;
+      --line: #33434a;
+      --green: #7bd0ae;
+      --orange: #ff9c72;
+      --orange-light: #382b28;
+      --blue: #91c8dc;
+      --white: #1c2a31;
+      --axis: #a2b0b2;
+      --city: #d0dbd9;
+      --track: #304047;
+      --answer: #d0dbd9;
+      --finding: #f0ccc0;
+      --finding-strong: #fff1ea;
+      --button-bg: #1c2a31;
+      --button-hover: #2c3d44;
     }
     * { box-sizing: border-box; }
     body {
@@ -29,8 +61,13 @@
       line-height: 1.55;
     }
     .page { max-width: 1120px; margin: 0 auto; padding: 42px 28px 54px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .masthead { display: flex; align-items: center; gap: 12px; color: var(--green); font-size: .76rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
     .masthead::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--green); }
+    .theme-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--button-bg); color: var(--ink); cursor: pointer; font: inherit; font-size: .8rem; font-weight: 700; transition: background-color .18s ease, border-color .18s ease; }
+    .theme-toggle:hover { background: var(--button-hover); }
+    .theme-toggle:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    .theme-icon { width: 1.1em; text-align: center; font-size: 1rem; }
     h1 { max-width: 780px; margin: 20px 0 12px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.5rem, 6vw, 4.9rem); font-weight: 500; letter-spacing: -.055em; line-height: .99; }
     .dek { max-width: 640px; margin: 0; color: var(--muted); font-size: 1.08rem; }
     .meta { display: flex; flex-wrap: wrap; gap: 9px 22px; margin-top: 24px; color: var(--muted); font-size: .84rem; }
@@ -40,15 +77,15 @@
     .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .65fr); gap: 28px; align-items: end; margin-bottom: 22px; }
     .eyebrow { margin: 0 0 6px; color: var(--orange); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.1; }
-    .answer { margin: 0; padding-left: 16px; border-left: 3px solid var(--green); color: #354a54; font-size: .98rem; }
+    .answer { margin: 0; padding-left: 16px; border-left: 3px solid var(--green); color: var(--answer); font-size: .98rem; }
     .answer strong { color: var(--ink); }
     .chart-card { padding: 24px 26px 18px; border: 1px solid var(--line); border-radius: 5px; background: var(--white); }
     .chart-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; margin: 0 0 15px; color: var(--muted); font-size: .77rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
-    .axis { display: flex; justify-content: space-between; margin: 0 0 7px; padding-left: 184px; color: #89969a; font-size: .68rem; }
+    .axis { display: flex; justify-content: space-between; margin: 0 0 7px; padding-left: 184px; color: var(--axis); font-size: .68rem; }
     .rows { display: grid; gap: 5px; }
     .row { display: grid; grid-template-columns: 170px minmax(80px, 1fr) 110px; gap: 14px; align-items: center; min-height: 27px; }
-    .city { overflow: hidden; color: #344a53; font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
-    .track { position: relative; height: 15px; overflow: hidden; border-radius: 2px; background: #f0f1ec; }
+    .city { overflow: hidden; color: var(--city); font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+    .track { position: relative; height: 15px; overflow: hidden; border-radius: 2px; background: var(--track); }
     .bar { height: 100%; min-width: 2px; border-radius: 2px; background: var(--green); }
     .value { text-align: right; color: var(--ink); font-size: .82rem; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
     .chart-note { margin: 17px 0 0; color: var(--muted); font-size: .78rem; }
@@ -61,11 +98,11 @@
     .pair-bars .track { height: 10px; }
     .pair-bars .bar.median { background: var(--blue); }
     .pair-bars .bar.mean { background: var(--orange); }
-    .pair-value { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #354a54; font-size: .72rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+    .pair-value { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: var(--answer); font-size: .72rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
     .pair-value strong { color: var(--ink); }
     .gap { display: block; margin-top: 1px; color: var(--orange); font-size: .67rem; font-weight: 750; }
-    .finding { margin: 20px 0 0; padding: 16px 18px; background: var(--orange-light); color: #50372f; font-size: .91rem; }
-    .finding strong { color: #38231d; }
+    .finding { margin: 20px 0 0; padding: 16px 18px; background: var(--orange-light); color: var(--finding); font-size: .91rem; }
+    .finding strong { color: var(--finding-strong); }
     .method { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
     .method h3 { margin: 0 0 5px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
     .method p { margin: 0; color: var(--muted); font-size: .82rem; }
@@ -91,7 +128,13 @@
 <body>
   <div class="page">
     <header>
-      <div class="masthead">Housing · Data report</div>
+      <div class="topline">
+        <div class="masthead">Housing · Data report</div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+          <span class="theme-icon" id="theme-icon" aria-hidden="true">☾</span>
+          <span id="theme-label">Dark mode</span>
+        </button>
+      </div>
       <h1>What homes sell for in college towns</h1>
       <p class="dek">A city by city look at sale prices across college towns, from the typical sale to the effect of unusually high prices.</p>
       <div class="meta"><span id="city-count">Loading cities…</span><span id="sale-count">Loading sales…</span><span>Data collected March 2026</span></div>
@@ -135,6 +178,28 @@
   </div>
 
   <script>
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeLabel = document.getElementById("theme-label");
+    const themeIcon = document.getElementById("theme-icon");
+    const themeColor = document.getElementById("theme-color");
+
+    function updateThemeControl() {
+      const isDark = document.documentElement.dataset.theme === "dark";
+      themeToggle.setAttribute("aria-pressed", String(isDark));
+      themeLabel.textContent = isDark ? "Light mode" : "Dark mode";
+      themeIcon.textContent = isDark ? "☀" : "☾";
+      themeColor.setAttribute("content", isDark ? "#111c22" : "#f5f3ed");
+    }
+
+    updateThemeControl();
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      if (nextTheme === "dark") document.documentElement.dataset.theme = "dark";
+      else delete document.documentElement.dataset.theme;
+      try { localStorage.setItem("home-sales-theme", nextTheme); } catch (_) {}
+      updateThemeControl();
+    });
+
     const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
     const compactCurrency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
     const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
