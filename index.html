@@ -1,31 +1,243 @@
-<!DOCTYPE html>
-<!-- A placeholder from the Home Sales template. Replace this file with your site's first page. -->
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Under construction</title>
-  <!-- An empty icon, so the browser doesn't log an error looking for favicon.ico -->
+  <meta name="theme-color" content="#f5f3ed">
+  <title>College-town home sales | Price report</title>
   <link rel="icon" href="data:,">
   <style>
-    :root { color-scheme: light dark; }
-    body {
-      max-width: 40rem;
-      margin: 0 auto;
-      padding: 3rem 1rem;
-      font-family: system-ui, sans-serif;
-      line-height: 1.5;
+    :root {
+      color-scheme: light;
+      --paper: #f5f3ed;
+      --ink: #182b36;
+      --muted: #667780;
+      --line: #d9dfd9;
+      --green: #126b59;
+      --green-light: #d7e9df;
+      --orange: #b95332;
+      --orange-light: #f1ded4;
+      --blue: #477c91;
+      --white: #fffefa;
     }
-    footer { margin-top: 3rem; font-size: 0.875rem; opacity: 0.75; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+    .page { max-width: 1120px; margin: 0 auto; padding: 42px 28px 54px; }
+    .masthead { display: flex; align-items: center; gap: 12px; color: var(--green); font-size: .76rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .masthead::before { content: ""; display: inline-block; width: 26px; height: 3px; background: var(--green); }
+    h1 { max-width: 780px; margin: 20px 0 12px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.5rem, 6vw, 4.9rem); font-weight: 500; letter-spacing: -.055em; line-height: .99; }
+    .dek { max-width: 640px; margin: 0; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 9px 22px; margin-top: 24px; color: var(--muted); font-size: .84rem; }
+    .meta span::before { content: "•"; margin-right: 8px; color: var(--orange); }
+    main { margin-top: 48px; }
+    .section { padding: 32px 0 38px; border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .65fr); gap: 28px; align-items: end; margin-bottom: 22px; }
+    .eyebrow { margin: 0 0 6px; color: var(--orange); font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; letter-spacing: -.035em; line-height: 1.1; }
+    .answer { margin: 0; padding-left: 16px; border-left: 3px solid var(--green); color: #354a54; font-size: .98rem; }
+    .answer strong { color: var(--ink); }
+    .chart-card { padding: 24px 26px 18px; border: 1px solid var(--line); border-radius: 5px; background: var(--white); }
+    .chart-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; margin: 0 0 15px; color: var(--muted); font-size: .77rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .axis { display: flex; justify-content: space-between; margin: 0 0 7px; padding-left: 184px; color: #89969a; font-size: .68rem; }
+    .rows { display: grid; gap: 5px; }
+    .row { display: grid; grid-template-columns: 170px minmax(80px, 1fr) 110px; gap: 14px; align-items: center; min-height: 27px; }
+    .city { overflow: hidden; color: #344a53; font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+    .track { position: relative; height: 15px; overflow: hidden; border-radius: 2px; background: #f0f1ec; }
+    .bar { height: 100%; min-width: 2px; border-radius: 2px; background: var(--green); }
+    .value { text-align: right; color: var(--ink); font-size: .82rem; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+    .chart-note { margin: 17px 0 0; color: var(--muted); font-size: .78rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; color: var(--muted); font-size: .78rem; letter-spacing: 0; text-transform: none; }
+    .swatch { display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; background: var(--green); }
+    .swatch.median { background: var(--blue); }
+    .swatch.mean { background: var(--orange); }
+    .paired { display: grid; grid-template-columns: 170px minmax(80px, 1fr) 190px; gap: 14px; align-items: center; min-height: 40px; }
+    .pair-bars { display: grid; gap: 3px; }
+    .pair-bars .track { height: 10px; }
+    .pair-bars .bar.median { background: var(--blue); }
+    .pair-bars .bar.mean { background: var(--orange); }
+    .pair-value { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #354a54; font-size: .72rem; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+    .pair-value strong { color: var(--ink); }
+    .gap { display: block; margin-top: 1px; color: var(--orange); font-size: .67rem; font-weight: 750; }
+    .finding { margin: 20px 0 0; padding: 16px 18px; background: var(--orange-light); color: #50372f; font-size: .91rem; }
+    .finding strong { color: #38231d; }
+    .method { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
+    .method h3 { margin: 0 0 5px; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+    .method p { margin: 0; color: var(--muted); font-size: .82rem; }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+    #status { padding: 12px 14px; border: 1px solid var(--line); background: var(--white); color: var(--muted); }
+    #status[hidden] { display: none; }
+    @media (max-width: 700px) {
+      .page { padding: 28px 17px 36px; }
+      main { margin-top: 34px; }
+      .section-head { grid-template-columns: 1fr; gap: 14px; }
+      .chart-card { padding: 18px 14px 15px; }
+      .row { grid-template-columns: 122px minmax(50px, 1fr) 88px; gap: 8px; }
+      .axis { padding-left: 130px; }
+      .paired { grid-template-columns: 122px minmax(50px, 1fr); gap: 8px; padding: 5px 0; }
+      .pair-value { grid-column: 2; justify-content: start; text-align: left; }
+      .pair-bars { grid-column: 2; grid-row: 1; }
+      .pair-value { grid-row: 2; }
+      .method { grid-template-columns: 1fr; gap: 17px; }
+    }
+    @media (max-width: 390px) { .city, .value { font-size: .72rem; } .row { grid-template-columns: 105px minmax(38px, 1fr) 78px; gap: 6px; } .axis { padding-left: 111px; } }
   </style>
 </head>
 <body>
-  <main>
-    <h1>This site is under construction</h1>
-    <p>It will show findings from the College-town home sales dataset.</p>
-  </main>
-  <footer>
-    <p>Data: College-town home sales dataset, version 1.0 (2026). University of Illinois-Deloitte Foundation Center for Business Emerging Technologies. Data collected March 2026.</p>
-  </footer>
+  <div class="page">
+    <header>
+      <div class="masthead">Housing · Data report</div>
+      <h1>What homes sell for in college towns</h1>
+      <p class="dek">A city by city look at sale prices across college towns, from the typical sale to the effect of unusually high prices.</p>
+      <div class="meta"><span id="city-count">Loading cities…</span><span id="sale-count">Loading sales…</span><span>Data collected March 2026</span></div>
+    </header>
+
+    <main>
+      <p id="status" role="status">Loading the sales data…</p>
+      <section class="section" aria-labelledby="q1-title">
+        <div class="section-head">
+          <div><p class="eyebrow">Question 01 · Typical sale</p><h2 id="q1-title">Where is the median sale price highest?</h2></div>
+          <p class="answer" id="q1-answer">Calculating city medians from valid sale prices.</p>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><span>Median sale price by city</span><span>Valid prices: $10,000–$5,000,000</span></div>
+          <div class="axis" aria-hidden="true"><span>$0</span><span id="q1-axis-mid"></span><span id="q1-axis-max"></span></div>
+          <div id="q1-chart" class="rows" role="img" aria-label="Median sale price for every city using valid prices"></div>
+          <p class="chart-note">Bars share a common scale. Only sale prices from $10,000 through $5,000,000, inclusive, are included.</p>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="q2-title">
+        <div class="section-head">
+          <div><p class="eyebrow">Question 02 · The pull of outliers</p><h2 id="q2-title">Where does the mean rise furthest above the median?</h2></div>
+          <p class="answer" id="q2-answer">Calculating means and medians from every recorded sale price.</p>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><span>Mean and median sale price by city</span><span class="legend"><span><i class="swatch mean"></i>Mean</span><span><i class="swatch median"></i>Median</span></span></div>
+          <div class="axis" aria-hidden="true"><span>$0</span><span id="q2-axis-mid"></span><span id="q2-axis-max"></span></div>
+          <div id="q2-chart" class="rows" role="img" aria-label="Mean and median sale price for every city, using all sale records"></div>
+          <p class="chart-note">Rows are ordered by mean above median as a share of the median. Both bars use the same dollar scale.</p>
+          <p class="finding" id="q2-finding"></p>
+        </div>
+      </section>
+
+      <aside class="method" aria-label="Method and source">
+        <div><h3>How to read this</h3><p>Q1 excludes prices outside the stated valid range. Q2 uses all recorded prices, including values that may be implausible. The percentage gap is (mean − median) ÷ median.</p></div>
+        <div><h3>Source</h3><p>College-town home sales dataset, version 1.0 (2026). University of Illinois-Deloitte Foundation Center for Business Emerging Technologies. Data collected March 2026.</p></div>
+      </aside>
+    </main>
+    <footer><span>College-town home sales</span><span>All figures are calculated from the linked source CSV when this page loads.</span></footer>
+  </div>
+
+  <script>
+    const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+    const compactCurrency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
+    const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+
+    function parseCSV(text) {
+      const records = [];
+      let row = [], field = "", quoted = false;
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (quoted) {
+          if (char === '"' && text[i + 1] === '"') { field += '"'; i++; }
+          else if (char === '"') quoted = false;
+          else field += char;
+        } else if (char === '"') quoted = true;
+        else if (char === ",") { row.push(field); field = ""; }
+        else if (char === "\n") { row.push(field.replace(/\r$/, "")); records.push(row); row = []; field = ""; }
+        else field += char;
+      }
+      if (field.length || row.length) { row.push(field.replace(/\r$/, "")); records.push(row); }
+      const headers = records.shift();
+      return records.filter(r => r.length === headers.length).map(values => Object.fromEntries(headers.map((header, i) => [header, values[i]])));
+    }
+
+    function median(values) {
+      const sorted = [...values].sort((a, b) => a - b);
+      const middle = Math.floor(sorted.length / 2);
+      return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+
+    function setAxis(midId, maxId, max) {
+      document.getElementById(midId).textContent = compactCurrency.format(max / 2);
+      document.getElementById(maxId).textContent = compactCurrency.format(max);
+    }
+
+    function makeSingleChart(container, cities, max) {
+      const chart = document.getElementById(container);
+      for (const item of cities) {
+        const row = document.createElement("div"); row.className = "row";
+        const name = document.createElement("span"); name.className = "city"; name.textContent = item.name;
+        const track = document.createElement("div"); track.className = "track"; track.setAttribute("aria-hidden", "true");
+        const bar = document.createElement("div"); bar.className = "bar"; bar.style.width = `${item.value / max * 100}%`; track.append(bar);
+        const value = document.createElement("span"); value.className = "value"; value.textContent = currency.format(item.value);
+        row.append(name, track, value); chart.append(row);
+      }
+    }
+
+    function makePairedChart(cities, max) {
+      const chart = document.getElementById("q2-chart");
+      for (const item of cities) {
+        const row = document.createElement("div"); row.className = "paired";
+        const name = document.createElement("span"); name.className = "city"; name.textContent = item.name;
+        const bars = document.createElement("div"); bars.className = "pair-bars"; bars.setAttribute("aria-hidden", "true");
+        for (const [kind, val] of [["mean", item.mean], ["median", item.median]]) {
+          const track = document.createElement("div"); track.className = "track";
+          const bar = document.createElement("div"); bar.className = `bar ${kind}`; bar.style.width = `${val / max * 100}%`; track.append(bar); bars.append(track);
+        }
+        const values = document.createElement("div"); values.className = "pair-value";
+        const mean = document.createElement("strong"); mean.textContent = currency.format(item.mean); mean.title = "Mean";
+        const med = document.createElement("strong"); med.textContent = currency.format(item.median); med.title = "Median";
+        values.append(mean, med);
+        const gap = document.createElement("span"); gap.className = "gap"; gap.textContent = `${percent.format(item.gap)}% above median`;
+        values.append(gap); row.append(name, bars, values); chart.append(row);
+      }
+    }
+
+    async function render() {
+      const status = document.getElementById("status");
+      try {
+        const response = await fetch("data/college_town_home_sales.csv");
+        if (!response.ok) throw new Error(`CSV request failed (${response.status})`);
+        const rows = parseCSV(await response.text()).filter(row => row.city && row.state && Number.isFinite(Number(row.sale_price)));
+        if (!rows.length) throw new Error("No sale records were found in the CSV.");
+        const groups = new Map();
+        for (const row of rows) {
+          const name = `${row.city}, ${row.state}`;
+          if (!groups.has(name)) groups.set(name, []);
+          groups.get(name).push(Number(row.sale_price));
+        }
+        const q1 = [...groups].map(([name, prices]) => ({ name, value: median(prices.filter(price => price >= 10000 && price <= 5000000)) })).filter(item => Number.isFinite(item.value)).sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+        const q2 = [...groups].map(([name, prices]) => {
+          const mean = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+          const med = median(prices);
+          return { name, mean, median: med, gap: (mean - med) / med * 100, prices };
+        }).sort((a, b) => b.gap - a.gap || a.name.localeCompare(b.name));
+        const q1max = Math.ceil(q1[0].value / 100000) * 100000;
+        const q2max = Math.ceil(Math.max(...q2.flatMap(item => [item.mean, item.median])) / 100000) * 100000;
+        document.getElementById("sale-count").textContent = `${rows.length.toLocaleString("en-US")} recorded sales`;
+        document.getElementById("city-count").textContent = `${groups.size.toLocaleString("en-US")} cities and towns`;
+        const topQ1 = q1[0];
+        document.getElementById("q1-answer").innerHTML = `<strong>${topQ1.name}</strong> has the highest median sale price, at <strong>${currency.format(topQ1.value)}</strong> among valid price records.`;
+        setAxis("q1-axis-mid", "q1-axis-max", q1max); makeSingleChart("q1-chart", q1, q1max);
+        const topQ2 = q2[0];
+        document.getElementById("q2-answer").innerHTML = `<strong>${topQ2.name}</strong> has the largest gap: its mean is <strong>${percent.format(topQ2.gap)}% above</strong> its median.`;
+        setAxis("q2-axis-mid", "q2-axis-max", q2max); makePairedChart(q2, q2max);
+        const largest = Math.max(...topQ2.prices);
+        const aboveCap = topQ2.prices.filter(price => price > 5000000).length;
+        document.getElementById("q2-finding").innerHTML = `<strong>What drives the gap?</strong> In ${topQ2.name}, a sale at ${currency.format(largest)} sits far above the rest of the city's prices and pulls the mean upward; the median is much less affected by an extreme value. This record is above the dataset's $5,000,000 plausibility cutoff${aboveCap > 1 ? `, and ${aboveCap - 1} other ${aboveCap - 1 === 1 ? "sale is" : "sales are"} above it` : ""}.`;
+        status.hidden = true;
+      } catch (error) {
+        status.textContent = `The report could not load the sales data. ${error.message} Check that data/college_town_home_sales.csv is available alongside this page.`;
+      }
+    }
+    render();
+  </script>
 </body>
 </html>
